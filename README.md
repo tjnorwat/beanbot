@@ -1,1 +1,1 @@
-Hello
+Python bot that sends images of beans
