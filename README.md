@@ -1,1 +1,1 @@
-Python bot that sends images of beans
+Python bot that sends images of beans to users 
