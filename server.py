@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import datetime
 import requests
 import discord
 import asyncio
@@ -53,7 +53,8 @@ async def on_message(message):
             if ID_ROLE_BEANBOI not in [role.id for role in message.author.roles]: # checks to see if user has been placed in "bean boi" role
                 role = discord.utils.get(message.server.roles, name = "bean boi")
                 await client.add_roles(message.author, role) # if not, place them in it
-                await client.send_message(message.channel, "<@" + message.author.id + "> has been successfully added to the \"Bean Boi\" role! please check <#" + ID_CHANNEL_BEANS + ">")
+                await client.send_message(message.channel, "<@" + message.author.id + "> has been successfully added to the \"Bean Boi\" role! please check <#" + ID_CHANNEL_BEANS + ">\nUse \";add <uploaded image/image url>\" to add images to beanbot!" )
+                
 
             if str(message.channel) != 'literally-just-beans':
                 await client.send_message(message.channel, "There's a little something something in <#" + ID_CHANNEL_BEANS + "> for <@" + message.author.id + ">...")
@@ -105,7 +106,7 @@ async def addImage(message, url, ext):
     os.rename(PATH + filename, PATH + "BeanImages/" + filename) # moves image to this folder
     print("new image was added")
     images()
-    await client.send_message(discord.Object(id= ID_CHANNEL_BEANS), "<@" + message.author.id + "> has successfully added a new " + ext + " image, totalling at " + str(num_of_files) + " beans!")
+    await client.send_message(discord.Object(id= ID_CHANNEL_BEANS), "<@" + message.author.id + "> has successfully added a new " + ext + " image, totalling at " + str(num_of_files + 1) + " beans!")
     
 
 if __name__ == "__main__":
