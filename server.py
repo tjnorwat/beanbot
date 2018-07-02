@@ -9,12 +9,14 @@ import time
 import os
 from discord.ext.commands import Bot
 from discord.ext import commands
+from discord.utils import get
 
 Client = discord.Client() #makes client
 client = commands.Bot(command_prefix = ";")
 ID_CHANNEL_BOTUSAGE = '461035453399695360'
 ID_CHANNEL_BEANS = '461398242525970442'
 ID_USER_BEANBOT = '461372954203127808'
+ID_ROLE_BEANBOI = '463189878830530560'
 ID_ROLE_ADMIN = '461220684983566347'
 ID_ROLE_MOD = '461029196647497747'
 PATH = ''
@@ -48,6 +50,11 @@ async def on_message(message):
         if(message.author.id != ID_USER_BEANBOT):
             # please do continue, you are not bean boy
             
+            if ID_ROLE_BEANBOI not in [role.id for role in message.author.roles]: # checks to see if user has been placed in "bean boi" role
+                role = discord.utils.get(message.server.roles, name = "bean boi")
+                await client.add_roles(message.author, role) # if not, place them in it
+                await client.send_message(message.channel, "<@" + message.author.id + "> has been successfully added to the \"Bean Boi\" role! please check <#" + ID_CHANNEL_BEANS + ">")
+
             if str(message.channel) != 'literally-just-beans':
                 await client.send_message(message.channel, "There's a little something something in <#" + ID_CHANNEL_BEANS + "> for <@" + message.author.id + ">...")
 
@@ -55,15 +62,17 @@ async def on_message(message):
             num_of_files = len(os.listdir(PATH + "BeanImages")) - 1
             num = str(rng.randint(0,num_of_files)) #gets random number between 0 and num of files
             try: #tries to send png image
-                await client.send_file(discord.Object(id= ID_CHANNEL_BEANS), PATH + '/BeanImages/' + num + '.png') #sends files to channel
+                await client.send_file(discord.Object(id= ID_CHANNEL_BEANS), PATH + 'BeanImages/' + num + '.png') #sends files to channel
             except FileNotFoundError:
                 try:
                     await client.send_file(discord.Object(id= ID_CHANNEL_BEANS), PATH + 'BeanImages/' + num + '.gif')
                 except FileNotFoundError:
                     try:
                         await client.send_file(discord.Object(id= ID_CHANNEL_BEANS), PATH + 'BeanImages/' + num + '.jpg')
-                    except FileNotFoundError:
-                        print("could not upload %s image" %num)
+                    except FileNotFoundError as e:
+                        print("Image not working: " + num)
+                        print("#############ERROR STARTS HERE############")
+                        print(e)
         
     # ;add command
     elif message.content.startswith(';add'):
@@ -77,7 +86,6 @@ async def on_message(message):
         if url[-4:] == '.jpg' or url[-4:] == 'jpeg': #checks for jpg 
             await addImage(message, url, '.jpg')
         elif url[-4:] == '.png': # checks for png
-            print("hey")
             await addImage(message, url, '.png')
         elif url[-4:] == '.gif':
             await addImage(message, url, '.gif')
@@ -95,9 +103,10 @@ async def addImage(message, url, ext):
     filename = str(num_of_files) + ext 
     open(filename,'wb').write(r.content) # saves image to directory that script is in
     os.rename(PATH + filename, PATH + "BeanImages/" + filename) # moves image to this folder
-    await client.send_message(discord.Object(id= ID_CHANNEL_BEANS), "<@" + message.author.id + "> has successfully added a new " + ext + " image, totalling at " + str(num_of_files) + " beans!")
-    print(message.author + " added a new image")
+    print("new image was added")
     images()
+    await client.send_message(discord.Object(id= ID_CHANNEL_BEANS), "<@" + message.author.id + "> has successfully added a new " + ext + " image, totalling at " + str(num_of_files) + " beans!")
+    
 
 if __name__ == "__main__":
     with open("config.json") as config_file:
